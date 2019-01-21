@@ -1,6 +1,5 @@
-const routes = require('next-routes')();
+const routes = require("next-routes")();
 
-routes
-	.add('/', '/home/index')
+routes.add("/", "/home/index").add("signal", "/signal/:id/:tabName");
 
 module.exports = routes;

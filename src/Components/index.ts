@@ -1,1 +1,1 @@
-export { Heading } from '@Components/Heading';
+export { SignalHeader } from "@Components/SignalHeader";
