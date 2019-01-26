@@ -20,6 +20,7 @@ export interface Props {
   query: any;
 }
 import SearchBar from "@Components/SearchBar";
+import { PatentCharts } from "@Components/PatentCharts";
 
 export class PatentsTab extends Component<Props> {
   static defaultProps = {
@@ -88,6 +89,8 @@ export class PatentsTab extends Component<Props> {
               return <PatentCard record={record} id={record.fid} />;
             })}
         </div>
+
+        <PatentCharts />
       </div>
     );
   }
