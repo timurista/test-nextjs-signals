@@ -1,12 +1,17 @@
 import React from "react";
+
 // import Downshift from "downshift";
 import "./style.scss";
 
 const SearchBar = ({ placeholder = "Enter keywords", onChange }: any) => {
+  const onKeyDown = (evt: any) => {
+    var c = evt.keyCode;
+    if (c === 13) onChange(evt);
+  };
   return (
     <div id="search-bar-container">
       <input
-        onChange={onChange}
+        onKeyDown={onKeyDown}
         type="text"
         id="search-bar"
         placeholder={placeholder}

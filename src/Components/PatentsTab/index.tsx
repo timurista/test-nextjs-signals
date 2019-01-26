@@ -1,13 +1,23 @@
 import React, { Component } from "react";
-// import { debounce } from "throttle-debounce";
+import Loading from "@Components/Loading";
+import PatentCard from "@Components/PatentCard";
 import axios from "axios";
 import getConfig from "next/config";
 
-const { publicRuntimeConfig, serverRuntimeConfig } = getConfig();
+const { publicRuntimeConfig } = getConfig();
+console.log("CONFIG", publicRuntimeConfig);
+const { ES_INSTANCE, ES_PASSWORD, ES_USERNAME } = publicRuntimeConfig;
+const username = ES_USERNAME;
+const password = ES_PASSWORD;
+let credentials = Buffer.from(username + ":" + password).toString("base64");
+let basicAuth = "Basic " + credentials;
+const baseURL = ES_INSTANCE;
 
 export interface Props {
   title: string;
   keywords: Array<string>;
+  esClient: any;
+  query: any;
 }
 import SearchBar from "@Components/SearchBar";
 
@@ -19,43 +29,46 @@ export class PatentsTab extends Component<Props> {
 
   state = {
     records: [],
-    total: 0
+    total: 0,
+    loading: false
   };
 
-  onChange = (evt: any) => {
-    console.log("CHANGE EVENT", evt.target.value);
-    this.search(evt.target.value);
+  onChange = (val: any) => {
+    console.log("CHANGE EVENT", val);
+    this.search(val);
   };
 
-  search(val: string) {
-    console.log(process);
-    console.log(publicRuntimeConfig, serverRuntimeConfig);
-
-    const es_search = ES_INSTANCE + "/patents/_search";
-    const username = ES_USERNAME;
-    const password = ES_PASSWORD;
-    let credentials = btoa(username + ":" + password);
-    let basicAuth = "Basic " + credentials;
-    const body = {
-      query: val
-    };
+  search = (evt: any) => {
+    // const body = {
+    //   query: val
+    // };
+    const val = evt.target.value;
+    console.log("search", evt, val);
+    if (val.length < 3) return;
     try {
+      this.setState({ loading: true });
       axios
-        .get(es_search + "?q=" + val, {
-          headers: { Authorization: basicAuth }
+        .get(baseURL + "/patents/_search?q=" + val, {
+          headers: {
+            Authorization: basicAuth
+          }
         })
-        .then(({ data }) => {
+        .then(({ data }: any) => {
           console.log("RES", data);
           console.log(data.total);
           this.setState({
-            records: data.hits.hits,
-            total: data.hits.total
+            records: data.hits.hits.map((x: any) => ({
+              ...x._source
+            })),
+            total: data.hits.total,
+            loading: false
           });
         });
     } catch (e) {
       console.error("ERROR", e);
+      this.setState({ loading: false });
     }
-  }
+  };
 
   render() {
     console.log("props", this.props);
@@ -66,11 +79,14 @@ export class PatentsTab extends Component<Props> {
           placeholder="Search for .."
           items={["React Vienna", "React Finland", "Jest", "Enzyme", "Reactjs"]}
         />
+
         <div>
-          {this.state.total}
-          {this.state.records.forEach(record => {
-            return <div id={record._id}>{JSON.stringify(record._source)}</div>;
-          })}
+          {this.state.loading && <Loading />}
+          {!this.state.loading && this.state.total > 0 && this.state.total}
+          {!this.state.loading &&
+            this.state.records.map(record => {
+              return <PatentCard record={record} id={record.fid} />;
+            })}
         </div>
       </div>
     );
