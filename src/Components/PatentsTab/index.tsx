@@ -2,16 +2,10 @@ import React, { Component } from "react";
 import Loading from "@Components/Loading";
 import PatentCard from "@Components/PatentCard";
 import axios from "axios";
-import getConfig from "next/config";
-
-const { publicRuntimeConfig } = getConfig();
-console.log("CONFIG", publicRuntimeConfig);
-const { ES_INSTANCE, ES_PASSWORD, ES_USERNAME } = publicRuntimeConfig;
-const username = ES_USERNAME;
-const password = ES_PASSWORD;
-let credentials = Buffer.from(username + ":" + password).toString("base64");
-let basicAuth = "Basic " + credentials;
-const baseURL = ES_INSTANCE;
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import "./style.scss";
+import { headers, baseURL } from "@Api/Elasticsearch";
 
 export interface Props {
   title: string;
@@ -31,28 +25,24 @@ export class PatentsTab extends Component<Props> {
   state = {
     records: [],
     total: 0,
+    keywords: this.props.keywords || "",
     loading: false
   };
 
-  onChange = (val: any) => {
-    console.log("CHANGE EVENT", val);
-    this.search(val);
+  onChange = (evt: any) => {
+    console.log("CHANGE EVENT", evt);
+    this.search(evt.target.value);
   };
 
-  search = (evt: any) => {
-    // const body = {
-    //   query: val
-    // };
-    const val = evt.target.value;
-    console.log("search", evt, val);
+  search = (val: any) => {
+    console.log("search", val);
     if (val.length < 3) return;
+    this.setState({ keywords: val });
     try {
       this.setState({ loading: true });
       axios
         .get(baseURL + "/patents/_search?q=" + val, {
-          headers: {
-            Authorization: basicAuth
-          }
+          headers
         })
         .then(({ data }: any) => {
           console.log("RES", data);
@@ -75,22 +65,25 @@ export class PatentsTab extends Component<Props> {
     console.log("props", this.props);
     return (
       <div className="patents-header">
-        <SearchBar
-          onChange={this.onChange}
-          placeholder="Search for .."
-          items={["React Vienna", "React Finland", "Jest", "Enzyme", "Reactjs"]}
-        />
+        <SearchBar onChange={this.onChange} placeholder="Search for .." />
 
-        <div>
-          {this.state.loading && <Loading />}
-          {!this.state.loading && this.state.total > 0 && this.state.total}
-          {!this.state.loading &&
-            this.state.records.map(record => {
-              return <PatentCard record={record} id={record.fid} />;
-            })}
+        <div className="results">
+          <div className="list-container">
+            <List>
+              {this.state.loading && <Loading />}
+              {!this.state.loading && this.state.total > 0 && this.state.total}
+              {!this.state.loading &&
+                this.state.records.map(record => {
+                  return (
+                    <ListItem key={record.fid}>
+                      <PatentCard record={record} />
+                    </ListItem>
+                  );
+                })}
+            </List>
+          </div>
         </div>
-
-        <PatentCharts />
+        <PatentCharts keywords={this.state.keywords} />
       </div>
     );
   }
