@@ -1,55 +1,34 @@
 {
-	"compilerOptions": {
-		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": ".",
-		"jsx": "preserve",
-		"lib": [
-			"dom",
-			"es2017"
-		],
-		"module": "esnext",
-		"moduleResolution": "node",
-		"noEmit": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"preserveConstEnums": true,
-		"removeComments": false,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": true,
-		"target": "esnext",
-		"paths": {
-			"@Components/*": [
-				"./src/Components/*"
-			],
-			"@Components": [
-				"./src/Components"
-			],
-			"@Interfaces": [
-				"./src/Interfaces"
-			],
-			"@Interfaces/*": [
-				"./src/Interfaces/*"
-			],
-			"@Definations": [
-				"./src/Definations"
-			],
-			"@Reducers": [
-				"./src/Redux/Reducers"
-			],
-			"@Reducers/*": [
-				"./src/Redux/Reducers/*"
-			],
-			"@Redux": [
-				"./src/Redux"
-			],
-			"@Redux/*": [
-				"./src/Redux/*"
-			],
-			"@Actions": [
-				"./src/Actions"
-			]
-		},
-	}
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "lib": ["dom", "es2017"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": true,
+    "removeComments": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "esnext",
+    "paths": {
+      "@Components/*": ["./src/Components/*"],
+      "@Components": ["./src/Components"],
+      "@Api/*": ["./src/Api/*"],
+      "@Api": ["./src/Api"],
+      "@Interfaces": ["./src/Interfaces"],
+      "@Interfaces/*": ["./src/Interfaces/*"],
+      "@Definations": ["./src/Definations"],
+      "@Reducers": ["./src/Redux/Reducers"],
+      "@Reducers/*": ["./src/Redux/Reducers/*"],
+      "@Redux": ["./src/Redux"],
+      "@Redux/*": ["./src/Redux/*"],
+      "@Actions": ["./src/Actions"]
+    }
+  }
 }

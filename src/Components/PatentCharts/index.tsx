@@ -20,70 +20,22 @@ export const CardContainer = styled.div`
 
 export interface Props {
   keywords: string;
+  mapData: Array<any>;
 }
 export class PatentCharts extends Component<Props> {
   state = {
     records: []
   };
 
-  getChartData = () => {
-    const keywords = this.props.keywords;
-    console.log("search", keywords);
-    if (keywords.length < 3) return;
-
-    const body = {
-      size: 0,
-      aggs: {
-        patents_over_time: {
-          histogram: {
-            field: "filing_date",
-            interval: 100,
-            min_doc_count: 1
-          },
-          aggs: {
-            assignee_count: {
-              terms: { field: "assignee.keyword" }
-            },
-            country_count: {
-              terms: { field: "country.keyword" }
-            },
-            inventor_count: {
-              terms: { field: "inventor.keyword" }
-            }
-          }
-        }
-      }
-    };
-    try {
-      this.setState({ loading: true });
-      axios
-        .post(baseURL + "/patents/_search?q=" + keywords, body, { headers })
-        .then(({ data }: any) => {
-          console.log("RES CHART", data);
-          console.log(data.total);
-          this.setState({
-            records: data.aggregations.patents_over_time.buckets,
-            total: data.hits.total,
-            loading: false
-          });
-        });
-    } catch (e) {
-      console.error("ERROR", e);
-      this.setState({ loading: false });
-    }
-  };
   render() {
     console.log("records", this.state.records);
     return (
       <div id="charts">
         <CardContainer>
           <Typography variant="h5">CHARTS</Typography>
-          <span>
-            <Button onClick={this.getChartData}>Load charts</Button>
-          </span>
         </CardContainer>
         <div>
-          <CountryMap data={this.state.records} />
+          <CountryMap data={this.props.mapData} />
         </div>
       </div>
     );
