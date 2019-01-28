@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import world from "./world";
+import transformer from "./transform";
+import numeral from "numeral";
 
 const width = 800;
 const height = 400;
@@ -9,7 +11,7 @@ export interface Props {
   data: any;
 }
 
-class CountryMap extends Component {
+class CountryMap extends Component<Props> {
   render() {
     let projection = d3
       .geoMercator()
@@ -21,10 +23,43 @@ class CountryMap extends Component {
       <path key={"path" + i} d={pathGenerator(d)} className="countries" />
     ));
 
-    const patentCountryData = [];
+    let dots;
+    const { topCountries } = transformer(this.props.data);
+    dots = topCountries.map((d, i) => {
+      const path = projection(d.cords);
+      if (!path) {
+        return null;
+      }
+      const cx = path[0];
+      const cy = path[1];
+      const weight = d.count / topCountries[0].count;
+      const r = `${Math.floor(weight * 30 + 18).toFixed(0)}px`;
+      return (
+        <g>
+          <circle
+            key={"circle" + i}
+            cx={cx}
+            cy={cy}
+            className="cirlce"
+            r={r}
+            fill={"red"}
+          />
+          <text
+            x={cx}
+            y={cy}
+            textAnchor="middle"
+            className="label"
+            title={d.name}
+            fill={"white"}
+            dy="0.3em"
+          >
+            {numeral(d.count).format("0[.]0a")}
+          </text>
+        </g>
+      );
+    });
 
-    let tooltips = [];
-    let dots = [];
+    // let tooltips = [];
     console.log("data", this.props.data);
 
     // var map = g
@@ -112,7 +147,6 @@ class CountryMap extends Component {
       <svg width={width} height={height}>
         {countries}
         {dots}
-        {tooltips}
       </svg>
     );
   }
