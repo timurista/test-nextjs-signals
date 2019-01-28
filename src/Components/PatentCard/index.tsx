@@ -5,6 +5,7 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import format from "date-fns/format";
 import "./style.scss";
+import { Divider } from "@material-ui/core";
 
 const getDateString = (dateNum: number) => {
   const s = dateNum.toString();
@@ -26,17 +27,25 @@ export class Card extends Component<Props> {
       "MMM YYYY"
     );
     return (
-      <ExpansionPanel className="patent-card">
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+      <div className="patent-card">
+        <div>
           <div className="card-summary">
             <div>{date}</div>
             <div>
               <a href={record.url}>{record.title}</a>
             </div>
+            <div
+              className="expand-more"
+              onClick={() =>
+                this.setState(prev => ({ expanded: !prev.expanded }))
+              }
+            >
+              <ExpandMoreIcon />
+            </div>
           </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>{record.abstract}</ExpansionPanelDetails>
-      </ExpansionPanel>
+        </div>
+        {this.state.expanded && <div>{record.abstract}</div>}
+      </div>
     );
   }
 }

@@ -12,6 +12,8 @@ export interface Props {
   keywords: Array<string>;
   esClient: any;
   query: any;
+  records: any;
+  mapData: any;
 }
 import SearchBar from "@Components/SearchBar";
 import { PatentCharts } from "@Components/PatentCharts";
@@ -23,15 +25,65 @@ export class PatentsTab extends Component<Props> {
   };
 
   state = {
-    records: [],
-    total: 0,
+    records: this.props.records || [],
+    mapData: this.props.mapData || [],
+    total: this.props.total || 0,
     keywords: this.props.keywords || "",
     loading: false
   };
 
   onChange = (evt: any) => {
     console.log("CHANGE EVENT", evt);
+    this.setState({ keywords: evt.target.value });
     this.search(evt.target.value);
+    this.searchMap(evt.target.value);
+  };
+
+  searchMap = (val: any) => {
+    if (val.length < 3) return;
+
+    const keywords = val;
+    console.log("search map", keywords);
+    if (keywords.length < 3) return;
+
+    const body = {
+      size: 0,
+      aggs: {
+        patents_over_time: {
+          histogram: {
+            field: "filing_date",
+            interval: 100,
+            min_doc_count: 1
+          },
+          aggs: {
+            assignee_count: {
+              terms: { field: "assignee.keyword" }
+            },
+            country_count: {
+              terms: { field: "country.keyword" }
+            },
+            inventor_count: {
+              terms: { field: "inventor.keyword" }
+            }
+          }
+        }
+      }
+    };
+    try {
+      this.setState({ loading: true });
+      axios
+        .post(baseURL + "/patents/_search?q=" + keywords, body, { headers })
+        .then(({ data }: any) => {
+          console.log("RES CHART", data);
+          console.log(data.total);
+          this.setState({
+            mapData: data.aggregations.patents_over_time.buckets,
+            loading: false
+          });
+        });
+    } catch (e) {
+      this.setState({ loading: false });
+    }
   };
 
   search = (val: any) => {
@@ -65,7 +117,7 @@ export class PatentsTab extends Component<Props> {
     console.log("props", this.props);
     return (
       <div className="patents-header">
-        <SearchBar onChange={this.onChange} placeholder="Search for .." />
+        <SearchBar onChange={this.onChange} keywords={this.state.keywords} />
 
         <div className="results">
           <div className="list-container">
@@ -83,7 +135,10 @@ export class PatentsTab extends Component<Props> {
             </List>
           </div>
         </div>
-        <PatentCharts keywords={this.state.keywords} />
+        <PatentCharts
+          mapData={this.state.mapData}
+          keywords={this.state.keywords}
+        />
       </div>
     );
   }
