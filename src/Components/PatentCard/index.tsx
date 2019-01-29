@@ -34,6 +34,8 @@ export class Card extends Component<Props> {
             <div>
               <a href={record.url}>{record.title}</a>
             </div>
+            <div>Inventor: {record.inventor}</div>
+            <div> Assignee: {record.assignee}</div>
             <div
               className="expand-more"
               onClick={() =>
