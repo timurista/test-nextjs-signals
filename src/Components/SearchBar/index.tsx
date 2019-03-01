@@ -3,7 +3,13 @@ import React, { Component } from "react";
 // import Downshift from "downshift";
 import "./style.scss";
 
-class SearchBar extends Component {
+export interface Props {
+  onChange: Function;
+  keywords: string;
+  placeholder?: string;
+}
+
+class SearchBar extends Component<Props> {
   state = {
     keywords: this.props.keywords || ""
   };

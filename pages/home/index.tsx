@@ -12,9 +12,9 @@ import { HomeActions } from "@Actions";
 export class HomePage extends React.Component<
   IHomePage.IProps,
   IHomePage.IState
-> {
+  > {
   public render(): JSX.Element {
-    return <div className="title">Hello!</div>;
+    return <div className="title"><a href="/benchmark">Bench Mark Patents!</a></div>;
   }
 }
 
