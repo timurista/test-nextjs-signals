@@ -14,7 +14,12 @@ export class HomePage extends React.Component<
   IHomePage.IState
   > {
   public render(): JSX.Element {
-    return <div className="title"><a href="/benchmark">Bench Mark Patents!</a></div>;
+    return (
+      <div className="content">
+        <div className="title"><a href="/benchmark">Bench mark different patent algorithms</a></div>
+        <div className="title"><a href="/benchmark-infinite-scroll">Infinite Loader</a></div>
+      </div>
+    );
   }
 }
 
